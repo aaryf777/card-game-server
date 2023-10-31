@@ -194,10 +194,10 @@ exports.getContestTypes = async (req, res, next) => {
 exports.getProfile = async (req,res,next) => {
     try {
         const {userID, email} = req.body;
+        console.log("req.body in getprofile - ",req.body);
         if(userID) {
             const user = await UserModel.findOne({userID});
             const {userName, email, coins, contests, contestHistory, created_at, contact} = user;
-            console.log('initial contestHistory - ',contestHistory);
             let resData = {userName, email, coins, contests, created_at,contact}
             let contestList = await ContestModel.find({},{'_id':0}).where('contestID').in(contestHistory.map(ele => ele.contestID))
             let newCL = [];
@@ -206,16 +206,19 @@ exports.getProfile = async (req,res,next) => {
                 newCL.push(temp)
             }
             contestList = newCL.reverse();
+            
             let clist = [];
             for(let c of contestList) {
                 let userList = c.users;
                 const user1 = await UserModel.findOne({userID:userList[0]?.userID},{userName:1,email:1,_id:0})
                 const user2 = await UserModel.findOne({userID:userList[1]?.userID},{userName:1,email:1,_id:0})
-                let temp = {contestName:c.constestName,betamount:c.betamount,winningamount:c.winningamount,contestID:c.contestID,created_at:c.created_at,users:[{userName:user1.userName, email:user1.email, rank:userList[0].rank},{userName:user2.userName, email:user2.email,rank:userList[1].rank}]}
+                console.log("user1 - ", user1, " user2 - ", user2);
+                let temp = {contestName:c.constestName,betamount:c.betamount,winningamount:c.winningamount,contestID:c.contestID,created_at:c.created_at,users:[{userName:user1?.userName, email:user1?.email, rank:userList[0]?.rank},{userName:user2?.userName, email:user2?.email,rank:userList[1]?.rank}]}
                 clist.push(temp)
             }
             contestList = clist;
             resData = {...resData,contestHistory:contestList}
+            
             // console.log('contestList - ',contestList);
             res.status(200).json({
                 status: 'success',

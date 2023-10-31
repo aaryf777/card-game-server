@@ -1,14 +1,11 @@
 const app = require("./config/app");
 const db = require("./config/db");
 const {port,env} = require('./constants/vars');
+const server = require("http").Server(app)
 db.connect();
-
-
-
-
-app.listen(port, () => {
-    console.log(`${env} server running on port ${port}`)
-    // logger.info(`${env} server running on port ${port}`)
+server.listen(port, () => {
+    console.log(`websocket server running on port ${port}`);
 })
+const io = require("socket.io")(server, { cors: { origin: "*" } });
 
-module.exports = app;
+module.exports = io;

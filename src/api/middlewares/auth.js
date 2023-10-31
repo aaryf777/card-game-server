@@ -43,6 +43,7 @@ const verifyJwt = (req, res, next) => {
         }
         next();
     } catch (err) {
+        console.log("in verifyJwt auth err");
         res.status(401).json({
             success: false,
             message: "Unauthorized",
